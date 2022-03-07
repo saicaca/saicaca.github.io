@@ -5,7 +5,7 @@ keywords: null
 author: Rizth
 language: en
 timezone: ''
-url: http://example.com
+url: https://cynaka.gitee.io/blog
 permalink: ':year/:month/:day/:title/'
 permalink_defaults: null
 pretty_urls:
