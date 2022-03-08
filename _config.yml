@@ -62,5 +62,5 @@ ignore: null
 theme: icarus
 deploy:
   type: git
-  repo: https://gitee.com/cynaka/blog.git
+  repo: https://github.com/saica-sub/saica-sub.github.io.git
   branch: master
