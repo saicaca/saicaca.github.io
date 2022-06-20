@@ -2,10 +2,10 @@ title: Hexo
 subtitle: ''
 description: ''
 keywords: null
-author: Rizth
+author: Saica
 language: en
 timezone: ''
-url: https://cynaka.gitee.io/blog
+url: https://saicaca.github.io/
 permalink: ':year/:month/:day/:title/'
 permalink_defaults: null
 pretty_urls:
@@ -62,5 +62,5 @@ ignore: null
 theme: icarus
 deploy:
   type: git
-  repo: https://github.com/saica-sub/saica-sub.github.io.git
-  branch: master
+  repo: https://github.com/saicaca/saicaca.github.io.git
+  branch: main
