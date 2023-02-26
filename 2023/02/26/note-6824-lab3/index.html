@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+
+<html theme="dark" showBanner="true" hasBanner="true" > 
+<link href="/fontawesome/css/fontawesome.css" rel="stylesheet">
+<link href="/fontawesome/css/brands.css" rel="stylesheet">
+<link href="/fontawesome/css/solid.css" rel="stylesheet">
+<script src="/js/color.global.min.js" ></script>
+<script src="/js/load-settings.js" ></script>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>6.824 Lab 3 笔记 | Saica&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="目标 实现 Put(key, value), Append(key, arg), Get(key) Get 当输入了不存在的 key 时应返回空字符串 对不存在的 key 进行的 Append 操作应该等同于 Put   Each client talks to the service  through a Cleck Service 必须具备强一致性，可串行化  Lab 3A 我们的每一个 kv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6.824 Lab 3 笔记">
+<meta property="og:url" content="http://example.com/2023/02/26/note-6824-lab3/index.html">
+<meta property="og:site_name" content="Saica&#39;s Blog">
+<meta property="og:description" content="目标 实现 Put(key, value), Append(key, arg), Get(key) Get 当输入了不存在的 key 时应返回空字符串 对不存在的 key 进行的 Append 操作应该等同于 Put   Each client talks to the service  through a Cleck Service 必须具备强一致性，可串行化  Lab 3A 我们的每一个 kv">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-02-26T12:52:21.000Z">
+<meta property="article:modified_time" content="2023-02-26T12:55:22.842Z">
+<meta property="article:author" content="Saica.go">
+<meta property="article:tag" content="Back-end">
+<meta property="article:tag" content="Golang">
+<meta property="article:tag" content="Lab">
+<meta property="article:tag" content="Distributed Systems">
+<meta property="article:tag" content="6.824">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Saica's Blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  
+  
+    
+<div id="banner" class="">
+  <img src="/assets/banner.png" itemprop="image">
+  <div id="banner-dim"></div>
+</div>
+ 
+   
+  <div id="main-grid" class="shadow   ">
+    <div id="nav" class=""  >
+      <navbar id="navbar">
+  <nav id="title-nav">
+    <a href="/">
+      <div id="vix-logo">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div>Saica's Blog </div>
+    </a>
+  </nav>
+  <nav id="main-nav">
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+  </nav>
+  <nav id="sub-nav">
+    <a id="theme-btn" class="nav-icon">
+      <span class="material-symbols-rounded light-mode-icon">wb_sunny</span>
+      <span class="material-symbols-rounded dark-mode-icon">dark_mode</span>
+    </a>
+    
+      <a id="nav-rss-link" class="nav-icon mobile-hide" href="/atom.xml" title="RSS Feed">
+        <span class="material-symbols-rounded rss">rss_feed</span>
+      </a>
+    
+    <a id="nav-search-btn" class="nav-icon" title="Search" style="display: none;">
+      <span class="material-symbols-rounded">search</span>
+    </a>
+    <div id="nav-menu-btn" class="nav-icon">
+      <span class="material-symbols-rounded">menu</span>
+    </div>
+  </nav>
+</navbar>
+<div id="nav-dropdown" class="hidden">
+  <div id="dropdown-link-list">
+    
+      <a class="nav-dropdown-link" href="/">Home</a>
+    
+      <a class="nav-dropdown-link" href="/archives">Archives</a>
+    
+      <a class="nav-dropdown-link" href="/about">About</a>
+    
+    
+      <a class="nav-dropdown-link" href="/atom.xml" title="RSS Feed">RSS</a>
+     
+    </div>
+</div>
+<script>
+  let dropdownBtn = document.getElementById("nav-menu-btn");
+  let dropdownEle = document.getElementById("nav-dropdown");
+  dropdownBtn.onclick = function() {
+    dropdownEle.classList.toggle("hidden");
+  }
+</script>
+    </div>
+    <div id="sidebar-wrapper">
+      <sidebar id="sidebar">
+  
+    <div class="widget-wrap">
+  <div class="info-card">
+    <div class="avatar">
+      <image src=/assets/avatar.png></image>
+      <div class="img-dim"></div>
+    </div>
+    <div class="info">
+      <div class="username">Saica.go </div>
+      <div class="dot"></div>
+      <div class="subtitle">(A noob to) web development/UI design </div>
+      <div class="link-list">
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/saicaca/" title="GitHub"><i class="fa-brands fa-github"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://steamcommunity.com/id/saicaca/" title="Steam"><i class="fa-brands fa-steam"></i></a>
+         
+      </div>  
+    </div>
+  </div>
+</div>
+
+  
+  <div class="sticky">
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Tags</h3>
+      <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/6-824/" rel="tag">6.824</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Back-end/" rel="tag">Back-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Design/" rel="tag">Design</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Distributed-Systems/" rel="tag">Distributed Systems</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/English/" rel="tag">English</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Front-end/" rel="tag">Front-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/" rel="tag">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lab/" rel="tag">Lab</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/" rel="tag">Python</a></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Archives</h3>
+      
+      
+        <a class="archive-link" href="/archives/2023/02 ">
+          February 2023 
+          <div class="archive-count">1 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2021/05 ">
+          May 2021 
+          <div class="archive-count">1 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2021/03 ">
+          March 2021 
+          <div class="archive-count">2 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2020/09 ">
+          September 2020 
+          <div class="archive-count">1 </div>
+        </a>
+      
+    </div>
+  </div>
+
+
+    
+  </div>
+</sidebar>
+    </div>
+    <div id="content-body">
+       
+
+<article id="post-note-6824-lab3" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+    
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="title-bar">
+  <div class="title-dot"></div>
+  
+    
+      <h1 class="p-name article-title" itemprop="headline name">
+        6.824 Lab 3 笔记
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <a href="/2023/02/26/note-6824-lab3/" class="meta-info">
+  <time class="dt-published" datetime="2023-02-26T12:52:21.000Z" itemprop="datePublished">2023-02-26</time>
+</a>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+    Uncategorized 
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            1k words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/6-824/" rel="tag">6.824</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Back-end/" rel="tag">Back-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Distributed-Systems/" rel="tag">Distributed Systems</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/" rel="tag">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lab/" rel="tag">Lab</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><ul>
+<li>实现 <code>Put(key, value)</code>, <code>Append(key, arg)</code>, <code>Get(key)</code><ul>
+<li><code>Get</code> 当输入了不存在的 key 时应返回空字符串</li>
+<li>对不存在的 key 进行的 <code>Append</code> 操作应该等同于 <code>Put</code></li>
+</ul>
+</li>
+<li>Each client talks to the service  through a <code>Cleck</code></li>
+<li>Service 必须具备强一致性，可串行化</li>
+</ul>
+<h1 id="Lab-3A"><a href="#Lab-3A" class="headerlink" title="Lab 3A"></a>Lab 3A</h1><ul>
+<li>我们的每一个 <code>kvserver</code> 都有一个相关联的 Raft 节点， <code>Clerks</code> 会将三种 RPC 请求发送到与 Raft leader 相关联的 <code>kvserver</code></li>
+<li><code>Clerk</code> 并不一定知道哪个服务器是 Leader，如果请求发送到了错误的服务器或无法连接服务器， <code>Clerk</code> 应该自动重新尝试发送到其他服务器</li>
+<li>如果 operation 对应的 log 被 commit 了，leader 应该 respond RPC，如果 operation failed to commit，则应该返回错误，然后 <code>Clerk</code> 尝试其他服务器</li>
+<li>各个 kvserver 不能直接通信，只能通过 Raft 通信</li>
+</ul>
+<h2 id="Task-1"><a href="#Task-1" class="headerlink" title="Task 1"></a>Task 1</h2><ul>
+<li><code>client.go</code> 是 <code>Clerk</code> 的客户端，负责向各个 <code>kvserver</code> 发送 RPC 请求，</li>
+<li><code>server.go</code> 是 <code>kvserver</code> 的代码</li>
+</ul>
+<h3 id="防止-Operation-重复"><a href="#防止-Operation-重复" class="headerlink" title="防止 Operation 重复"></a>防止 Operation 重复</h3><p>Server 可能在执行 Command 后、向 Client 返回结果前崩溃，此时 Client 会向另一个 Server 发送同一条 Operation，这时必须保证这条 Operation 只被执行一次。</p>
+<p>我目前的解决方法是为每一条 Operation 生成一个 UUID，再用 Set 保存已经执行过的 Operation 的 UUID。（最开始用的是 <code>rand.Int()</code>生成 ID，但后面发现这样总是会多次生成出同一个 ID，即便用时间戳设置了 seed，没搞清楚原因）</p>
+<h3 id="处理-Operation-丢失的情况"><a href="#处理-Operation-丢失的情况" class="headerlink" title="处理 Operation 丢失的情况"></a>处理 Operation 丢失的情况</h3><p>Raft 并不保证通过 <code>Start()</code> 发送的 operation 一定会被 commit，比如像 <code>Figure 8</code> 里的 log 3 最终被舍弃。为了避免无限等待被舍弃的 operation， <code>kvserver</code> 需要记录当前的 <code>commitIndex</code> ，如果检测到 <code>Start()</code> 返回的 <code>logIndex</code> 小于等于 <code>kv.commitIndex</code> ，则说明当前 operation 没有被 commit，直接返回错误，客户端重新发送请求。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> logIndex &lt;= kv.appliedIndex &#123; <span class="comment">// The log failed to commit</span></span><br><span class="line">		reply.Err = ErrCommandLost</span><br><span class="line">		kv.mu.Unlock()</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Task-2"><a href="#Task-2" class="headerlink" title="Task 2"></a>Task 2</h2><h3 id="Troubleshooting-1"><a href="#Troubleshooting-1" class="headerlink" title="Troubleshooting 1"></a>Troubleshooting 1</h3><p>在 <code>ops complete fast enough (3A)</code> 这个测试上遇到了问题，test 要求每条指令平均在 33.3ms 内完成，而我的代码需要 150+ ms</p>
+<p>问题出在 Raft 的实现上，按当前的实现，Raft Leader 每次通过 <code>Start()</code> 接收到的 Command 会等到下一次 <code>AppendEntries</code> 才被发送到其它节点。Lab 3A 的提示写到 Client 一次只会发送一条指令，而根据 Lab 2 的要求，AppendEntries 的循环间隔不能小于 100ms，因此仅凭普通的 <code>AppendEntries</code> 循环来复制指令应该是无法满足时间要求的。</p>
+<p>最后修改了一下 Raft 的实现：</p>
+<ol>
+<li>每次通过 <code>Start()</code> 接收到指令时马上发起 <code>AppendEntries</code> ，</li>
+<li>缩短检查 log 的 commit 和 apply 情况的间隔时间，原本设置了一个 80ms 的间隔，测试发现这个间隔设置得越短 test 完成的速度就越快。最后设置到了 1ms，test 的完成时间接近官网上的 15s。但如果完全不设置间隔又会导致超时。</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">... Passed --  <span class="number">14.0</span>  <span class="number">3</span>  <span class="number">3030</span>    <span class="number">0</span></span><br><span class="line">PASS</span><br><span class="line">ok      <span class="number">6.824</span>/kvraft    <span class="number">13.994</span>s</span><br></pre></td></tr></table></figure>
+
+<h3 id="Troubleshooting-2"><a href="#Troubleshooting-2" class="headerlink" title="Troubleshooting 2"></a>Troubleshooting 2</h3><p>在 <code>TestOnePartition3A</code> 这个 Test 中遇到了中途有请求永远得不到响应的问题。最后发现是 Raft 实现里遗留的一个问题。</p>
+<p>如 Raft 协议规定，Leader 不能直接 commit 来自先前 term 的 entry ，只能在 commit 当前 term 的 entry 的时候间接地 commit。因此如果遇到了 <code>Figure 8</code> 中的那种情况（最新的 log 来自先前的 term），而又一直没有从 client 接收到新的 log，那么先前的 log 就永远无法 commit。而这个 Test 中的指令又是每次一条地发送，程序就卡在这了。</p>
+<p>解决方法：Raft 节点在当选 Leader 时立即 append 一个 <code>no-op</code> entry（command 为空），即可避免前面说的问题。</p>
+<p>这个 no-op entry 也需要传给 <code>kvserver</code> ，让其更新 <code>commitIndex</code> ，应对前面提到的 Operation 丢失的问题。</p>
+<h3 id="Recover"><a href="#Recover" class="headerlink" title="Recover"></a>Recover</h3><p>虽然好像课程网站上 3A 的部分没有明确提到，但是带有 <code>Persist</code> 字样的 Test 都是要求实现恢复机制的，大概就是在 <code>StartKVServer()</code> 里从 Raft 中获取已经 Applied 的 Operations，从头开始执行一遍即可。</p>
+
+        
+      </div>
+
+         
+    </div>
+    
+     
+  </div>
+  
+    
+<nav id="article-nav">
+  <a class="article-nav-btn left  disabled "
+     >
+    <i class="fa-solid fa-angle-left"></i>
+    <p class="title-text">
+        
+    </p>
+  </a>
+  <a class="article-nav-btn right "
+    
+      href="/2021/05/09/saladict-theme/"
+      title="写了一个沙拉查词的 CSS 样式"
+     >
+
+    <p class="title-text">
+      
+        写了一个沙拉查词的 CSS 样式
+        
+    </p>
+    <i class="fa-solid fa-angle-right"></i>
+  </a>
+</nav>
+
+
+  
+</article>
+
+ 
+    </div>
+    <div id="footer-wrapper">
+      <footer id="footer">
+  
+  <div id="footer-info" class="inner">
+    
+    &copy; 2023 Saica.go<br>
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & Theme <a target="_blank" rel="noopener" href="https://github.com/saicaca/hexo-theme-vix">Vix</a>
+  </div>
+</footer>
+
+    </div>
+    <div class="back-to-top-wrapper">
+    <button id="back-to-top-btn" class="back-to-top-btn" onclick="topFunction()">
+        <span class="material-symbols-rounded">keyboard_arrow_up</span>
+    </button>
+</div>
+
+<script>
+    function topFunction() {
+        window.scroll({ top: 0, behavior: 'smooth' });
+    }
+    let btn = document.getElementById('back-to-top-btn');
+    function scrollFunction() {
+        if (document.body.scrollTop > 600 || document.documentElement.scrollTop > 600) {
+            btn.style.opacity = 1;
+        } else {
+            btn.style.opacity = 0;
+        }
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    }
+</script>
+
+  </div>
+  <script src="/js/light-dark-switch.js"></script>
+</body>
+</html>

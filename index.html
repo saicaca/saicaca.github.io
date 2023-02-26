@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+
+
+<html theme="dark" showBanner="true" hasBanner="true" > 
+<link href="/fontawesome/css/fontawesome.css" rel="stylesheet">
+<link href="/fontawesome/css/brands.css" rel="stylesheet">
+<link href="/fontawesome/css/solid.css" rel="stylesheet">
+<script src="/js/color.global.min.js" ></script>
+<script src="/js/load-settings.js" ></script>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Saica&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="(A noob to) web development&#x2F;UI design">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Saica&#39;s Blog">
+<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:site_name" content="Saica&#39;s Blog">
+<meta property="og:description" content="(A noob to) web development&#x2F;UI design">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Saica.go">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Saica's Blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  
+  
+    
+<div id="banner" class=" is_home ">
+  <img src="/assets/banner.png" itemprop="image">
+  <div id="banner-dim"></div>
+</div>
+ 
+   
+  <div id="main-grid" class="shadow   ">
+    <div id="nav" class=" is_home "  >
+      <navbar id="navbar">
+  <nav id="title-nav">
+    <a href="/">
+      <div id="vix-logo">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div>Saica's Blog </div>
+    </a>
+  </nav>
+  <nav id="main-nav">
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+  </nav>
+  <nav id="sub-nav">
+    <a id="theme-btn" class="nav-icon">
+      <span class="material-symbols-rounded light-mode-icon">wb_sunny</span>
+      <span class="material-symbols-rounded dark-mode-icon">dark_mode</span>
+    </a>
+    
+      <a id="nav-rss-link" class="nav-icon mobile-hide" href="/atom.xml" title="RSS Feed">
+        <span class="material-symbols-rounded rss">rss_feed</span>
+      </a>
+    
+    <a id="nav-search-btn" class="nav-icon" title="Search" style="display: none;">
+      <span class="material-symbols-rounded">search</span>
+    </a>
+    <div id="nav-menu-btn" class="nav-icon">
+      <span class="material-symbols-rounded">menu</span>
+    </div>
+  </nav>
+</navbar>
+<div id="nav-dropdown" class="hidden">
+  <div id="dropdown-link-list">
+    
+      <a class="nav-dropdown-link" href="/">Home</a>
+    
+      <a class="nav-dropdown-link" href="/archives">Archives</a>
+    
+      <a class="nav-dropdown-link" href="/about">About</a>
+    
+    
+      <a class="nav-dropdown-link" href="/atom.xml" title="RSS Feed">RSS</a>
+     
+    </div>
+</div>
+<script>
+  let dropdownBtn = document.getElementById("nav-menu-btn");
+  let dropdownEle = document.getElementById("nav-dropdown");
+  dropdownBtn.onclick = function() {
+    dropdownEle.classList.toggle("hidden");
+  }
+</script>
+    </div>
+    <div id="sidebar-wrapper">
+      <sidebar id="sidebar">
+  
+    <div class="widget-wrap">
+  <div class="info-card">
+    <div class="avatar">
+      <image src=/assets/avatar.png></image>
+      <div class="img-dim"></div>
+    </div>
+    <div class="info">
+      <div class="username">Saica.go </div>
+      <div class="dot"></div>
+      <div class="subtitle">(A noob to) web development/UI design </div>
+      <div class="link-list">
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/saicaca/" title="GitHub"><i class="fa-brands fa-github"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://steamcommunity.com/id/saicaca/" title="Steam"><i class="fa-brands fa-steam"></i></a>
+         
+      </div>  
+    </div>
+  </div>
+</div>
+
+  
+  <div class="sticky">
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Tags</h3>
+      <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/6-824/" rel="tag">6.824</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Back-end/" rel="tag">Back-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Design/" rel="tag">Design</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Distributed-Systems/" rel="tag">Distributed Systems</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/English/" rel="tag">English</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Front-end/" rel="tag">Front-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/" rel="tag">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lab/" rel="tag">Lab</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/" rel="tag">Python</a></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Archives</h3>
+      
+      
+        <a class="archive-link" href="/archives/2023/02 ">
+          February 2023 
+          <div class="archive-count">1 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2021/05 ">
+          May 2021 
+          <div class="archive-count">1 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2021/03 ">
+          March 2021 
+          <div class="archive-count">2 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2020/09 ">
+          September 2020 
+          <div class="archive-count">1 </div>
+        </a>
+      
+    </div>
+  </div>
+
+
+    
+  </div>
+</sidebar>
+    </div>
+    <div id="content-body">
+      
+   
+
+<article id="post-note-6824-lab3" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="title-bar">
+  <div class="title-dot"></div>
+  
+    
+      <h1 itemprop="name">
+        <a class="p-name article-title" href="/2023/02/26/note-6824-lab3/">6.824 Lab 3 笔记</a>
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <a href="/2023/02/26/note-6824-lab3/" class="meta-info">
+  <time class="dt-published" datetime="2023-02-26T12:52:21.000Z" itemprop="datePublished">2023-02-26</time>
+</a>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+    Uncategorized 
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            1k words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/6-824/" rel="tag">6.824</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Back-end/" rel="tag">Back-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Distributed-Systems/" rel="tag">Distributed Systems</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/" rel="tag">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lab/" rel="tag">Lab</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <div class="truncate-text">
+            目标
+实现 Put(key, value), Append(key, arg), Get(key)
+Get 当输入了不存在的 key 时应返回空字符串
+对不存在的 key 进行的 Append 操作应该等同于 Put
+
+
+Each client talks to the service  through a Cleck
+Service 必须具备强一致性，可串行化
+
+Lab 3A
+我们的每一个 kvserver 都有一个相关联的 Raft 节点， Clerks 会将三种 RPC 请求发送到与 Raft leader 相关联的 kvserver
+Clerk 并不一定知道哪个服务器是 Leader，如果请求发送到了错误的服务器或无法连接服务器， Clerk 应该自动重新尝试发送到其他服务器
+如果 operation 对应的 log 被 commit 了，leader 应该 respond RPC，如果 operation failed to commit，则应该返回错误，然后 Clerk 尝试其他服务器
+各个 kvserver 不能直接通信，只能通过 Raft 通信
+
+Task 1
+c...  
+          </div>
+        
+      </div>
+
+         
+    </div>
+    
+     
+    <a class="right-panel  non-pic  "
+      
+      href="/2023/02/26/note-6824-lab3/" 
+    >
+       
+      <i class="fa-solid fa-angle-right non-pic"></i>
+       
+    </a>
+     
+  </div>
+  
+</article>
+
+ 
+
+   
+
+<article id="post-saladict-theme" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="title-bar">
+  <div class="title-dot"></div>
+  
+    
+      <h1 itemprop="name">
+        <a class="p-name article-title" href="/2021/05/09/saladict-theme/">写了一个沙拉查词的 CSS 样式</a>
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <a href="/2021/05/09/saladict-theme/" class="meta-info">
+  <time class="dt-published" datetime="2021-05-08T16:37:52.000Z" itemprop="datePublished">2021-05-09</time>
+</a>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+    Uncategorized 
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            69 words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Design/" rel="tag">Design</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Front-end/" rel="tag">Front-end</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <div class="truncate-text">
+            沙拉查词是一个我很喜欢的 Chrome 网页查词扩展，但个人不是很喜欢它的默认样式。正好官方提供了自定义 CSS 样式的功能，于是自己写了一个。总之就长下面这样。GitHub 链接
+  
+          </div>
+        
+      </div>
+
+         
+    </div>
+    
+     
+    <a class="right-panel  non-pic  "
+      
+      href="/2021/05/09/saladict-theme/" 
+    >
+       
+      <i class="fa-solid fa-angle-right non-pic"></i>
+       
+    </a>
+     
+  </div>
+  
+</article>
+
+ 
+
+   
+
+<article id="post-以-dataframe-形式获取-pyfolio-的回测结果" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="title-bar">
+  <div class="title-dot"></div>
+  
+    
+      <h1 itemprop="name">
+        <a class="p-name article-title" href="/2021/03/13/%E4%BB%A5-dataframe-%E5%BD%A2%E5%BC%8F%E8%8E%B7%E5%8F%96-pyfolio-%E7%9A%84%E5%9B%9E%E6%B5%8B%E7%BB%93%E6%9E%9C/">以 DataFrame 形式获取 Pyfolio 的回测结果</a>
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <a href="/2021/03/13/%E4%BB%A5-dataframe-%E5%BD%A2%E5%BC%8F%E8%8E%B7%E5%8F%96-pyfolio-%E7%9A%84%E5%9B%9E%E6%B5%8B%E7%BB%93%E6%9E%9C/" class="meta-info">
+  <time class="dt-published" datetime="2021-03-13T08:52:46.000Z" itemprop="datePublished">2021-03-13</time>
+</a>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+    Uncategorized 
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            143 words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/" rel="tag">Python</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <div class="truncate-text">
+            在做项目时用到了 Pyfolio 这个库，在 Jupyter Notebook 里调用它的 create_returns_tear_sheet 方法时会以 HTML 的形式显示一个包含众多技术指标的表格和许多其它图表。但我希望以 DataFrame 形式得到那个关于技术指标的表格。
+查看 create_simple_tear_sheet 函数的源码，我发现这个表格是由 plotting.show_perf_stats 函数完成的，函数中的 perf_stats 即为我需要的那个表格，函数最后将 perf_stats 传入 utils.print_table 这个用于绘制 HTML 表格的函数，将这一步修改为 return perf_stats 即可。
+  
+          </div>
+        
+      </div>
+
+         
+    </div>
+    
+     
+    <a class="right-panel  non-pic  "
+      
+      href="/2021/03/13/%E4%BB%A5-dataframe-%E5%BD%A2%E5%BC%8F%E8%8E%B7%E5%8F%96-pyfolio-%E7%9A%84%E5%9B%9E%E6%B5%8B%E7%BB%93%E6%9E%9C/" 
+    >
+       
+      <i class="fa-solid fa-angle-right non-pic"></i>
+       
+    </a>
+     
+  </div>
+  
+</article>
+
+ 
+
+   
+
+<article id="post-dash-的基础回调" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="title-bar">
+  <div class="title-dot"></div>
+  
+    
+      <h1 itemprop="name">
+        <a class="p-name article-title" href="/2021/03/10/dash-%E7%9A%84%E5%9F%BA%E7%A1%80%E5%9B%9E%E8%B0%83/">Dash 的基础回调</a>
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <a href="/2021/03/10/dash-%E7%9A%84%E5%9F%BA%E7%A1%80%E5%9B%9E%E8%B0%83/" class="meta-info">
+  <time class="dt-published" datetime="2021-03-10T13:03:09.000Z" itemprop="datePublished">2021-03-10</time>
+</a>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+    Uncategorized 
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            371 words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/" rel="tag">Python</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <div class="truncate-text">
+            官方文档：Basic Dash Callbacks
+最简单的交互式 Dash 应用123456@app.callback(    Output(component_id=&#x27;my-output&#x27;, component_property=&#x27;children&#x27;),    Input(component_id=&#x27;my-input&#x27;, component_property=&#x27;value&#x27;))def update_output_div(input_value):    return &#x27;Output: &#123;&#125;&#x27;.format(input_value)
+
+输入输出作为 @app.callback 装饰器的参数。
+component_id 代表页面中组件的 ID，component_property 代表组件中的具体参数。
+当 Input 指定的参数发生变化时，装饰器所装饰的函数会被立即调用，变化后的参数将成为函数的传入参数。函数的返回值将被输出到 Output 所指定的参数上。
+...  
+          </div>
+        
+      </div>
+
+         
+    </div>
+    
+     
+    <a class="right-panel  non-pic  "
+      
+      href="/2021/03/10/dash-%E7%9A%84%E5%9F%BA%E7%A1%80%E5%9B%9E%E8%B0%83/" 
+    >
+       
+      <i class="fa-solid fa-angle-right non-pic"></i>
+       
+    </a>
+     
+  </div>
+  
+</article>
+
+ 
+
+   
+
+<article id="post-vocabulary" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="title-bar">
+  <div class="title-dot"></div>
+  
+    
+      <h1 itemprop="name">
+        <a class="p-name article-title" href="/2020/09/01/vocabulary/">个人用易混词汇表</a>
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <a href="/2020/09/01/vocabulary/" class="meta-info">
+  <time class="dt-published" datetime="2020-09-01T12:06:15.000Z" itemprop="datePublished">2020-09-01</time>
+</a>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+    Uncategorized 
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            2.3k words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/English/" rel="tag">English</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <div class="truncate-text">
+            abbreviate v. 缩写；使省略；使用缩写词alleviate v. 减轻；缓解；缓和
+absolve v. 赦免；宽恕absolute adj. 完全的；绝对的；纯粹的
+affection n. 喜爱；爱慕；感情；作用；影响；疾病affectation n. 假装；做作；装模做样
+aggravate v. 使恶化，加重；使气恼，激怒aggregate n. 合计；总数；v. 集合；聚集；合计；adj. 总的，总数的，集合的
+amends n. 赔罪，赔偿amend v. 改进，修订，修正
+appropriate n. 合适的，适当的；v. 挪用，拨款，私占appropriation n. 挪用，拨款appreciation n. 感激，鉴赏，增值，了解proprietary adj. 所有权，专利的 n. 所有权，所有物，所有人
+accent n. 口音assent n. v. 同意；赞成ascent n. 上升；上坡路；登高
+astronomy n. 天文学astrology n. 占星学；占星术；星座
+adverse adj. 不利的；逆的diverse adj. ...  
+          </div>
+        
+      </div>
+
+         
+    </div>
+    
+     
+    <a class="right-panel  non-pic  "
+      
+      href="/2020/09/01/vocabulary/" 
+    >
+       
+      <i class="fa-solid fa-angle-right non-pic"></i>
+       
+    </a>
+     
+  </div>
+  
+</article>
+
+ 
+
+
+
+    </div>
+    <div id="footer-wrapper">
+      <footer id="footer">
+  
+  <div id="footer-info" class="inner">
+    
+    &copy; 2023 Saica.go<br>
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & Theme <a target="_blank" rel="noopener" href="https://github.com/saicaca/hexo-theme-vix">Vix</a>
+  </div>
+</footer>
+
+    </div>
+    <div class="back-to-top-wrapper">
+    <button id="back-to-top-btn" class="back-to-top-btn" onclick="topFunction()">
+        <span class="material-symbols-rounded">keyboard_arrow_up</span>
+    </button>
+</div>
+
+<script>
+    function topFunction() {
+        window.scroll({ top: 0, behavior: 'smooth' });
+    }
+    let btn = document.getElementById('back-to-top-btn');
+    function scrollFunction() {
+        if (document.body.scrollTop > 600 || document.documentElement.scrollTop > 600) {
+            btn.style.opacity = 1;
+        } else {
+            btn.style.opacity = 0;
+        }
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    }
+</script>
+
+  </div>
+  <script src="/js/light-dark-switch.js"></script>
+</body>
+</html>
