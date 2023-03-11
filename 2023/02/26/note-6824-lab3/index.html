@@ -13,15 +13,15 @@
   
   <title>6.824 Lab 3 笔记 | Saica&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="目标 实现 Put(key, value), Append(key, arg), Get(key) Get 当输入了不存在的 key 时应返回空字符串 对不存在的 key 进行的 Append 操作应该等同于 Put   Each client talks to the service  through a Cleck Service 必须具备强一致性，可串行化  Lab 3A 我们的每一个 kv">
+  <meta name="description" content="目标 实现 Put(key, value), Append(key, arg), Get(key) Get 当输入了不存在的 key 时应返回空字符串 对不存在的 key 进行的 Append 操作应该等同于 Put   Each client talks to the service  through a Cleck Service 必须具备强一致性，可串行化  说明 我们的每一个 kvserv">
 <meta property="og:type" content="article">
 <meta property="og:title" content="6.824 Lab 3 笔记">
 <meta property="og:url" content="http://example.com/2023/02/26/note-6824-lab3/index.html">
 <meta property="og:site_name" content="Saica&#39;s Blog">
-<meta property="og:description" content="目标 实现 Put(key, value), Append(key, arg), Get(key) Get 当输入了不存在的 key 时应返回空字符串 对不存在的 key 进行的 Append 操作应该等同于 Put   Each client talks to the service  through a Cleck Service 必须具备强一致性，可串行化  Lab 3A 我们的每一个 kv">
+<meta property="og:description" content="目标 实现 Put(key, value), Append(key, arg), Get(key) Get 当输入了不存在的 key 时应返回空字符串 对不存在的 key 进行的 Append 操作应该等同于 Put   Each client talks to the service  through a Cleck Service 必须具备强一致性，可串行化  说明 我们的每一个 kvserv">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-02-26T12:52:21.000Z">
-<meta property="article:modified_time" content="2023-02-26T12:55:22.842Z">
+<meta property="article:modified_time" content="2023-03-11T17:24:55.636Z">
 <meta property="article:author" content="Saica.go">
 <meta property="article:tag" content="Back-end">
 <meta property="article:tag" content="Golang">
@@ -137,6 +137,8 @@
           <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/saicaca/" title="GitHub"><i class="fa-brands fa-github"></i></a>
         
           <a class="link-btn" target="_blank" rel="noopener" href="https://steamcommunity.com/id/saicaca/" title="Steam"><i class="fa-brands fa-steam"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com" title="GitHub"><i class="fa-brands fa-github"></i></a>
          
       </div>  
     </div>
@@ -225,7 +227,7 @@
   
           </div>
           <div class="wordcount need-seperator meta-info">
-            1k words 
+            1.8k words 
           </div>
         </div>
         
@@ -243,22 +245,46 @@
 <li>Each client talks to the service  through a <code>Cleck</code></li>
 <li>Service 必须具备强一致性，可串行化</li>
 </ul>
-<h1 id="Lab-3A"><a href="#Lab-3A" class="headerlink" title="Lab 3A"></a>Lab 3A</h1><ul>
+<h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><ul>
 <li>我们的每一个 <code>kvserver</code> 都有一个相关联的 Raft 节点， <code>Clerks</code> 会将三种 RPC 请求发送到与 Raft leader 相关联的 <code>kvserver</code></li>
 <li><code>Clerk</code> 并不一定知道哪个服务器是 Leader，如果请求发送到了错误的服务器或无法连接服务器， <code>Clerk</code> 应该自动重新尝试发送到其他服务器</li>
 <li>如果 operation 对应的 log 被 commit 了，leader 应该 respond RPC，如果 operation failed to commit，则应该返回错误，然后 <code>Clerk</code> 尝试其他服务器</li>
 <li>各个 kvserver 不能直接通信，只能通过 Raft 通信</li>
-</ul>
-<h2 id="Task-1"><a href="#Task-1" class="headerlink" title="Task 1"></a>Task 1</h2><ul>
 <li><code>client.go</code> 是 <code>Clerk</code> 的客户端，负责向各个 <code>kvserver</code> 发送 RPC 请求，</li>
 <li><code>server.go</code> 是 <code>kvserver</code> 的代码</li>
 </ul>
-<h3 id="防止-Operation-重复"><a href="#防止-Operation-重复" class="headerlink" title="防止 Operation 重复"></a>防止 Operation 重复</h3><p>Server 可能在执行 Command 后、向 Client 返回结果前崩溃，此时 Client 会向另一个 Server 发送同一条 Operation，这时必须保证这条 Operation 只被执行一次。</p>
+<h2 id="需要考虑的问题"><a href="#需要考虑的问题" class="headerlink" title="需要考虑的问题"></a>需要考虑的问题</h2><h3 id="防止-Operation-重复"><a href="#防止-Operation-重复" class="headerlink" title="防止 Operation 重复"></a>防止 Operation 重复</h3><p>Server 可能在执行 Command 后、向 Client 返回结果前崩溃，此时 Client 会向另一个 Server 发送同一条 Operation，这时必须保证这条 Operation 只被执行一次。</p>
 <p>我目前的解决方法是为每一条 Operation 生成一个 UUID，再用 Set 保存已经执行过的 Operation 的 UUID。（最开始用的是 <code>rand.Int()</code>生成 ID，但后面发现这样总是会多次生成出同一个 ID，即便用时间戳设置了 seed，没搞清楚原因）</p>
-<h3 id="处理-Operation-丢失的情况"><a href="#处理-Operation-丢失的情况" class="headerlink" title="处理 Operation 丢失的情况"></a>处理 Operation 丢失的情况</h3><p>Raft 并不保证通过 <code>Start()</code> 发送的 operation 一定会被 commit，比如像 <code>Figure 8</code> 里的 log 3 最终被舍弃。为了避免无限等待被舍弃的 operation， <code>kvserver</code> 需要记录当前的 <code>commitIndex</code> ，如果检测到 <code>Start()</code> 返回的 <code>logIndex</code> 小于等于 <code>kv.commitIndex</code> ，则说明当前 operation 没有被 commit，直接返回错误，客户端重新发送请求。</p>
+<h3 id="处理-Operation-丢失的情况（结合-Figure-8-理解）"><a href="#处理-Operation-丢失的情况（结合-Figure-8-理解）" class="headerlink" title="处理 Operation 丢失的情况（结合 Figure 8 理解）"></a>处理 Operation 丢失的情况（结合 Figure 8 理解）</h3><p>Raft 并不保证通过 <code>Start()</code> 发送的 operation 一定会被 commit，比如像 <code>Figure 8</code> 里的 log 3 最终被舍弃。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> logIndex &lt;= kv.appliedIndex &#123; <span class="comment">// The log failed to commit</span></span><br><span class="line">		reply.Err = ErrCommandLost</span><br><span class="line">		kv.mu.Unlock()</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="Task-2"><a href="#Task-2" class="headerlink" title="Task 2"></a>Task 2</h2><h3 id="Troubleshooting-1"><a href="#Troubleshooting-1" class="headerlink" title="Troubleshooting 1"></a>Troubleshooting 1</h3><p>在 <code>ops complete fast enough (3A)</code> 这个测试上遇到了问题，test 要求每条指令平均在 33.3ms 内完成，而我的代码需要 150+ ms</p>
+<h3 id="避免过大的内存占用"><a href="#避免过大的内存占用" class="headerlink" title="避免过大的内存占用"></a>避免过大的内存占用</h3><h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><ul>
+<li><p>为每个客户端生成随机的 <code>clientId</code>，为每个客户端分别记录 <code>opIndex</code> ，这样通过 <code>clientId</code> 和 <code>logIndex</code> 能唯一对应一条命令。</p>
+</li>
+<li><p>Service 使用下面的结构存储指令执行结果</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> KVServer <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	OpMap        <span class="keyword">map</span>[<span class="type">string</span>]*OpResult</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> OpResult <span class="keyword">struct</span> &#123;</span><br><span class="line">	ClientOpIdx <span class="type">int</span></span><br><span class="line">	Value       <span class="type">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>OpMap[clientId]</code> 代表相应客户端<strong>最近一条成功 applied 的命令</strong>状态， <code>ClientOpIdx</code> 是对该客户端来说该命令的 Index，Value 存储 <code>GET</code> 命令所获取到的值。  </p>
+<p>Lab 说明里的一句话很重要：”It’s OK to assume that a client will make only one call into a Clerk at a time”。客户端每次只会发出一条命令，当收到 <code>Operation n</code> 时 <code>Operation n-1</code> 就不再需要保留了 。</p>
+</li>
+<li><p>Service 的 <code>Get</code> 、<code>PutAppend</code> 方法大致执行流程：</p>
+<ul>
+<li>将 <code>Op</code> 发送至 <code>kv.rf.Start()</code></li>
+<li><code>if !isLeader</code> 返回</li>
+<li>循环等待直到 <code>OpMap[clientId].ClientOpIdx</code> 变为当前指令的 index，说明当前指令已完成，返回结果<ul>
+<li>若一段时间后等不到结果，返回错误，客户端重新请求执行同一条指令</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>loopReceive()</code> 从 <code>kv.applyCh</code> 里不断获取 <code>Op</code> 并立即 Apply，同时更新 <code>OpMap[clientId]</code></p>
+<ul>
+<li>如果 Service 新收到的 <code>Op.id</code> ≤ <code>OpMap[clientId].ClientOpIdx</code> ，则可认为收到了重复的命令，跳过不执行。</li>
+<li>不用担心 <code>OpMap</code> 更新太快导致 <code>Get</code> 和 <code>PutAppend</code> 来不及获取结果。因为如上面所说客户端每次只会发出一条指令，在客户端正确收到指令 n 的执行结果前，Service 是不会收到指令 n+1 的。同样地，如果当前 <code>OpMap[clientId].ClientOpIdx</code> 为 <code>n</code>，说明指令 <code>n-1</code> 已经完成，<code>Get</code> 和 <code>PutAppend</code> 应该随便返回什么都行。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Troubleshooting-1"><a href="#Troubleshooting-1" class="headerlink" title="Troubleshooting 1"></a>Troubleshooting 1</h3><p>在 <code>ops complete fast enough (3A)</code> 这个测试上遇到了问题，test 要求每条指令平均在 33.3ms 内完成，而我的代码需要 150+ ms</p>
 <p>问题出在 Raft 的实现上，按当前的实现，Raft Leader 每次通过 <code>Start()</code> 接收到的 Command 会等到下一次 <code>AppendEntries</code> 才被发送到其它节点。Lab 3A 的提示写到 Client 一次只会发送一条指令，而根据 Lab 2 的要求，AppendEntries 的循环间隔不能小于 100ms，因此仅凭普通的 <code>AppendEntries</code> 循环来复制指令应该是无法满足时间要求的。</p>
 <p>最后修改了一下 Raft 的实现：</p>
 <ol>
@@ -267,11 +293,30 @@
 </ol>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">... Passed --  <span class="number">14.0</span>  <span class="number">3</span>  <span class="number">3030</span>    <span class="number">0</span></span><br><span class="line">PASS</span><br><span class="line">ok      <span class="number">6.824</span>/kvraft    <span class="number">13.994</span>s</span><br></pre></td></tr></table></figure>
 
-<h3 id="Troubleshooting-2"><a href="#Troubleshooting-2" class="headerlink" title="Troubleshooting 2"></a>Troubleshooting 2</h3><p>在 <code>TestOnePartition3A</code> 这个 Test 中遇到了中途有请求永远得不到响应的问题。最后发现是 Raft 实现里遗留的一个问题。</p>
-<p>如 Raft 协议规定，Leader 不能直接 commit 来自先前 term 的 entry ，只能在 commit 当前 term 的 entry 的时候间接地 commit。因此如果遇到了 <code>Figure 8</code> 中的那种情况（最新的 log 来自先前的 term），而又一直没有从 client 接收到新的 log，那么先前的 log 就永远无法 commit。而这个 Test 中的指令又是每次一条地发送，程序就卡在这了。</p>
-<p>解决方法：Raft 节点在当选 Leader 时立即 append 一个 <code>no-op</code> entry（command 为空），即可避免前面说的问题。</p>
-<p>这个 no-op entry 也需要传给 <code>kvserver</code> ，让其更新 <code>commitIndex</code> ，应对前面提到的 Operation 丢失的问题。</p>
+<ul>
+<li>（或许应该改用 channel 实现这一步骤）</li>
+</ul>
+<h3 id="Troubleshooting-2"><a href="#Troubleshooting-2" class="headerlink" title="Troubleshooting 2"></a>Troubleshooting 2</h3><p>最开始我没有使用超时机制解决指令丢失问题，而是记录当前执行完成的 Raft 的 <code>logIndex</code> ，如果过号了 <code>Get</code> <code>PutAppend</code> 方法还没有查询到结果就说明指令丢失了。</p>
+<p>这个实现在 <code>TestOnePartition3A</code> 中遇到了问题：中途会有请求永远得不到响应的问题。</p>
+<p>最后检查发现是我的 Raft 实现里遗留的一个问题。</p>
+<p>如 Raft 协议规定，Leader 不能直接 commit 来自先前 term 的 entry ，只能在 commit 当前 term 的 entry 的时候间接地 commit。因此如果遇到了 <code>Figure 8</code> 中的那种情况（最新的 entry 来自先前的 term），而又一直没有从 client 接收到新的 entry，那么先前的 entry 就永远无法 commit。而这个 Test 中的指令又是每次一条地发送，程序就卡在这了。</p>
+<p><strong>解决方法 1</strong></p>
+<p>感觉最正确的做法应该是在 Raft 代码里补上 no-op entry 的实现，让 Raft 节点在当选 Leader 的时候立即 append 一个 <code>no-op</code> entry。</p>
+<p>这样写能通过 Lab 3A 的测试，但之后我发现这样会让 Lab 2 的测试挂掉，似乎是会被测试程序判定为 log 数量不正确或是 log 乱序，不管是跳过 no-op entry 的 apply 或是把 <code>CommandValid</code> 设置为 <code>false</code> 都不行，目前没找到解决办法。</p>
+<p><strong>解决方法 2</strong></p>
+<p>把 no-op entry 放在 Service 层实现，Service 持续检查 Raft 状态，检测到 term 变化时发送一个空的 Operation，感觉这样写比较麻烦。</p>
+<p><strong><strong>解决方法 3</strong></strong></p>
+<p>最后采用了最简单的方法。不实现 no-op entry，在 Service 中的 Get &#x2F; PutAppend 方法里加上超时检测，超过时限后直接返回错误让客户端重发一遍，也能解决这个问题。</p>
 <h3 id="Recover"><a href="#Recover" class="headerlink" title="Recover"></a>Recover</h3><p>虽然好像课程网站上 3A 的部分没有明确提到，但是带有 <code>Persist</code> 字样的 Test 都是要求实现恢复机制的，大概就是在 <code>StartKVServer()</code> 里从 Raft 中获取已经 Applied 的 Operations，从头开始执行一遍即可。</p>
+<h1 id="3B"><a href="#3B" class="headerlink" title="3B"></a>3B</h1><ul>
+<li>时刻检测 <code>Raft State</code> 大小（包括 log，但不包括 Snapshot），使用 <code>maxraftstate</code> 和 <code>persister.RaftStateSize()</code> 进行对比，到达阈值时调用 <code>Snapshot</code> 函数，which in turn use <code>persister.SaveRaftState()</code> （没看懂什么意思）。<ul>
+<li>如果 <code>maxraftstate == -1</code> ，则不进行保存快照操作。</li>
+</ul>
+</li>
+<li>从 applych 收到 Snapshot 的时候，调用 <code>CondInstallSnapshot</code> ，参见 2D 笔记</li>
+<li>Service 重启时读取 Snapshot</li>
+<li>checkpoint 前后的 operations 有可能重复，用于检查重复 operations 的数据也需要保存到 snapshot 里</li>
+</ul>
 
         
       </div>

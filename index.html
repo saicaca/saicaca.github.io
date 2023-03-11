@@ -130,6 +130,8 @@
           <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/saicaca/" title="GitHub"><i class="fa-brands fa-github"></i></a>
         
           <a class="link-btn" target="_blank" rel="noopener" href="https://steamcommunity.com/id/saicaca/" title="Steam"><i class="fa-brands fa-steam"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com" title="GitHub"><i class="fa-brands fa-github"></i></a>
          
       </div>  
     </div>
@@ -217,7 +219,7 @@
   
           </div>
           <div class="wordcount need-seperator meta-info">
-            1k words 
+            1.8k words 
           </div>
         </div>
         
@@ -236,14 +238,12 @@ Get 当输入了不存在的 key 时应返回空字符串
 Each client talks to the service  through a Cleck
 Service 必须具备强一致性，可串行化
 
-Lab 3A
+说明
 我们的每一个 kvserver 都有一个相关联的 Raft 节点， Clerks 会将三种 RPC 请求发送到与 Raft leader 相关联的 kvserver
 Clerk 并不一定知道哪个服务器是 Leader，如果请求发送到了错误的服务器或无法连接服务器， Clerk 应该自动重新尝试发送到其他服务器
 如果 operation 对应的 log 被 commit 了，leader 应该 respond RPC，如果 operation failed to commit，则应该返回错误，然后 Clerk 尝试其他服务器
 各个 kvserver 不能直接通信，只能通过 Raft 通信
-
-Task 1
-c...  
+client.go 是 C...  
           </div>
         
       </div>
