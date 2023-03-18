@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+
+<html theme="dark" showBanner="true" hasBanner="true" > 
+<link href="/fontawesome/css/fontawesome.css" rel="stylesheet">
+<link href="/fontawesome/css/brands.css" rel="stylesheet">
+<link href="/fontawesome/css/solid.css" rel="stylesheet">
+<script src="/js/color.global.min.js" ></script>
+<script src="/js/load-settings.js" ></script>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>6.824 Lab 4 笔记 | Saica&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="说明实现一个支持 shard 的 KV 存储系统  一个 shard 是系统中 KV 对的一个子集，比如以 a 开头的 keys 可以是一个 shard 每个 replica group 负责处理一部分的 shards  系统包含两个主要组件  一组 replica groups 每个 replica group 负责一部分的 shards，一个 replica 由数个通过 Raft 复制组内 s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6.824 Lab 4 笔记">
+<meta property="og:url" content="http://example.com/2023/03/19/note-6824-lab4/index.html">
+<meta property="og:site_name" content="Saica&#39;s Blog">
+<meta property="og:description" content="说明实现一个支持 shard 的 KV 存储系统  一个 shard 是系统中 KV 对的一个子集，比如以 a 开头的 keys 可以是一个 shard 每个 replica group 负责处理一部分的 shards  系统包含两个主要组件  一组 replica groups 每个 replica group 负责一部分的 shards，一个 replica 由数个通过 Raft 复制组内 s">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-03-18T16:33:46.000Z">
+<meta property="article:modified_time" content="2023-03-18T16:35:27.845Z">
+<meta property="article:author" content="Saica.go">
+<meta property="article:tag" content="Back-end">
+<meta property="article:tag" content="Golang">
+<meta property="article:tag" content="Lab">
+<meta property="article:tag" content="Distributed Systems">
+<meta property="article:tag" content="6.824">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Saica's Blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  
+  
+    
+<div id="banner" class="">
+  <img src="/assets/banner.png" itemprop="image">
+  <div id="banner-dim"></div>
+</div>
+ 
+   
+  <div id="main-grid" class="shadow   ">
+    <div id="nav" class=""  >
+      <navbar id="navbar">
+  <nav id="title-nav">
+    <a href="/">
+      <div id="vix-logo">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div>Saica's Blog </div>
+    </a>
+  </nav>
+  <nav id="main-nav">
+    
+      <a class="main-nav-link" href="/">Home</a>
+    
+      <a class="main-nav-link" href="/archives">Archives</a>
+    
+      <a class="main-nav-link" href="/about">About</a>
+    
+  </nav>
+  <nav id="sub-nav">
+    <a id="theme-btn" class="nav-icon">
+      <span class="material-symbols-rounded light-mode-icon">wb_sunny</span>
+      <span class="material-symbols-rounded dark-mode-icon">dark_mode</span>
+    </a>
+    
+      <a id="nav-rss-link" class="nav-icon mobile-hide" href="/atom.xml" title="RSS Feed">
+        <span class="material-symbols-rounded rss">rss_feed</span>
+      </a>
+    
+    <a id="nav-search-btn" class="nav-icon" title="Search" style="display: none;">
+      <span class="material-symbols-rounded">search</span>
+    </a>
+    <div id="nav-menu-btn" class="nav-icon">
+      <span class="material-symbols-rounded">menu</span>
+    </div>
+  </nav>
+</navbar>
+<div id="nav-dropdown" class="hidden">
+  <div id="dropdown-link-list">
+    
+      <a class="nav-dropdown-link" href="/">Home</a>
+    
+      <a class="nav-dropdown-link" href="/archives">Archives</a>
+    
+      <a class="nav-dropdown-link" href="/about">About</a>
+    
+    
+      <a class="nav-dropdown-link" href="/atom.xml" title="RSS Feed">RSS</a>
+     
+    </div>
+</div>
+<script>
+  let dropdownBtn = document.getElementById("nav-menu-btn");
+  let dropdownEle = document.getElementById("nav-dropdown");
+  dropdownBtn.onclick = function() {
+    dropdownEle.classList.toggle("hidden");
+  }
+</script>
+    </div>
+    <div id="sidebar-wrapper">
+      <sidebar id="sidebar">
+  
+    <div class="widget-wrap">
+  <div class="info-card">
+    <div class="avatar">
+      <image src=/assets/avatar.png></image>
+      <div class="img-dim"></div>
+    </div>
+    <div class="info">
+      <div class="username">Saica.go </div>
+      <div class="dot"></div>
+      <div class="subtitle">(A noob to) web development/UI design </div>
+      <div class="link-list">
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com/saicaca/" title="GitHub"><i class="fa-brands fa-github"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://steamcommunity.com/id/saicaca/" title="Steam"><i class="fa-brands fa-steam"></i></a>
+        
+          <a class="link-btn" target="_blank" rel="noopener" href="https://github.com" title="GitHub"><i class="fa-brands fa-github"></i></a>
+         
+      </div>  
+    </div>
+  </div>
+</div>
+
+  
+  <div class="sticky">
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Tags</h3>
+      <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/6-824/" rel="tag">6.824</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Back-end/" rel="tag">Back-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CSS/" rel="tag">CSS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Design/" rel="tag">Design</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Distributed-Systems/" rel="tag">Distributed Systems</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/English/" rel="tag">English</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Front-end/" rel="tag">Front-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/" rel="tag">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lab/" rel="tag">Lab</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/" rel="tag">Python</a></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget-wrap">
+    <div class="widget">
+      <h3 class="widget-title">Archives</h3>
+      
+      
+        <a class="archive-link" href="/archives/2023/03 ">
+          March 2023 
+          <div class="archive-count">1 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2023/02 ">
+          February 2023 
+          <div class="archive-count">1 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2021/05 ">
+          May 2021 
+          <div class="archive-count">1 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2021/03 ">
+          March 2021 
+          <div class="archive-count">2 </div>
+        </a>
+      
+        <a class="archive-link" href="/archives/2020/09 ">
+          September 2020 
+          <div class="archive-count">1 </div>
+        </a>
+      
+    </div>
+  </div>
+
+
+    
+  </div>
+</sidebar>
+    </div>
+    <div id="content-body">
+       
+
+<article id="post-note-6824-lab4" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+    
+   
+  <div class="article-inner">
+    <div class="article-main">
+      <header class="article-header">
+        
+<div class="title-bar">
+  <div class="title-dot"></div>
+  
+    
+      <h1 class="p-name article-title" itemprop="headline name">
+        6.824 Lab 4 笔记
+      </h1>
+    
+  
+</div>
+
+        <div class='meta-info-bar'>
+          <a href="/2023/03/19/note-6824-lab4/" class="meta-info">
+  <time class="dt-published" datetime="2023-03-18T16:33:46.000Z" itemprop="datePublished">2023-03-19</time>
+</a>
+          <div class="need-seperator meta-info">
+            <div class="meta-cate-flex">
+  
+    Uncategorized 
+   
+</div>
+  
+          </div>
+          <div class="wordcount need-seperator meta-info">
+            1.5k words 
+          </div>
+        </div>
+        
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/6-824/" rel="tag">6.824</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Back-end/" rel="tag">Back-end</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Distributed-Systems/" rel="tag">Distributed Systems</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/" rel="tag">Golang</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lab/" rel="tag">Lab</a></li></ul>
+
+      </header>
+      <div class="e-content article-entry" itemprop="articleBody">
+        
+          <h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><p>实现一个支持 <code>shard</code> 的 KV 存储系统</p>
+<ul>
+<li>一个 shard 是系统中 KV 对的一个子集，比如以 a 开头的 keys 可以是一个 shard</li>
+<li>每个 replica group 负责处理一部分的 shards</li>
+</ul>
+<p>系统包含两个主要组件</p>
+<ol>
+<li><p>一组 replica groups</p>
+<p>每个 replica group 负责一部分的 shards，一个 replica 由数个通过 Raft 复制组内 shards 的服务器的组成。</p>
+</li>
+<li><p>shard controller</p>
+<p>决定哪个 replica group 负责哪些 shard，这个信息被称为 configuration。</p>
+<p>configuration 会随时间变化，客户端会询问 shard controller 来找到特定 key 对应的 replica group，replica groups 会询问 controller 来获知自己负责的 shards</p>
+<p>There is a single shard controller for the whole system, implemented as a fault-tolerant service using Raft.</p>
+</li>
+</ol>
+<p>系统必须能够将 shards 在 replica groups 之间迁移。一个目的是平衡负载，另一个原因是 replica groups 可能加入也可能离开系统。</p>
+<p>主要挑战在于处理 <code>reconfiguration</code> ，即改变 groups 与 shards 的分配关系。一个组内的成员必须对如何处理 reconfiguration 和 Put&#x2F;Get&#x2F;Append 请求的关系上达成一致。比如，一个 Put 请求，和一个要求本组停止负责 Put 请求所包含的 key 的 <code>reconfiguration</code> 同时发生，组内成员必须对先进行 reconfiguration 还是先处理 Put 请求达成一致。</p>
+<p>推荐做法是将使用 Raft 的 log 来记录 reconfiguration，就像 Put&#x2F;Append&#x2F;Get 请求一样。</p>
+<p>必须保证对某一个 shard 的请求在同一时间只由一个 replica group 负责。</p>
+<p>Reconfiguraion 要求 replica groups 之间的互动，比如当 shard S1 由 G1 移交给 G2 负责，则 G1 需要用 RPC 将 S1 的内容发送给 G2。</p>
+<p>客户端和服务器只能通过 RPC 通信。</p>
+<p>本 lab 的 <code>configuration</code> 指 replica 与 shard 的分配关系，与 Raft 集群成员变化是两回事。</p>
+<h1 id="Lab-4A"><a href="#Lab-4A" class="headerlink" title="Lab 4A"></a>Lab 4A</h1><p>实现 shard controller</p>
+<p><code>shardctrler</code> 管理一系列带序号的 configuration，每个 configuration 都描述了一组 replica groups，以及 shards 与 groups 的分配关系。当分配关系需要改变时，controller 就创建一个新的 configuration，当 KV 客户端和服务器希望知道当前（或之前的）配置时，会联系 shardctrler。</p>
+<p>实现 <code>shardctrler/common.go</code> 中的 <code>Join</code> <code>Leave</code> <code>Move</code> <code>Query</code> RPC，这些 RPC 允许管理员利用 <code>shardctrler</code> 去添加 replica groups，移除 replica groups，使 shards 在 groups 之间转移。</p>
+<p> <code>Join</code> 用于添加新的副本组，参数是一个 <code>&#123;GroupId: []serverName&#125;</code> 的 map，controller 需要创建一个包含新副本组的新配置。新配置应该尽可能均匀地分配 shards，并在重分配过程中尽可能减少 shards 的移动。controller 应该允许 GID(GroupId) 的重用，只要该 GID 没有在当前的配置里出现。</p>
+<p><code>Leave</code> 的参数是一个列表，包含先前加入的组的 <code>GID</code> 。controller 需要创建一个不包含这些组的新配置，并将这些组负责的 shard 分配到剩余的组里。同样地，尽量均匀分配并减少数据移动。</p>
+<p><code>Move</code> 的参数是一个 shard 编号和一个 GID，controller 需要创建一个新配置，将对应的 shard 分配给指定的组。The purpose of Move is to allow us to test your software. A Join or Leave following a Move will likely un-do the Move, since Join and Leave re-balance.</p>
+<p><code>Query</code> 的参数是一个配置编号，controller 返回对应的配置，若传入的编号为 <code>-1</code> 或大于当前的最大编号，则返回最新的配置。 <code>Query(-1)</code> 返回的配置应该能反映出先前处理的所有 <code>Join</code> <code>Leave</code> <code>Move</code></p>
+<p>第一条配置编号为0，不包含任何组，所有 shard 都被分配给 <code>GID zero</code> （一个不合法的 GID）</p>
+<p>通常 shard 的数量会显著大于 group，使得负载转移能有更小的粒度。</p>
+<h2 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h2><p>实现 <code>shardctrler/</code> 里 <code>client.go</code> 和 <code>server.go</code> 的接口</p>
+<ul>
+<li>可以从复制 <code>kvraft</code> 的代码开始</li>
+<li>需要实现对客户端重复请求的检测</li>
+<li>状态机实现 shard rebalancing 的代码需要是确定性（deterministic）的，注意 Go 中 map 的遍历顺序是非确定性的</li>
+<li>注意 Go 的 maps 是引用，如果用一个 map 给另一个 map 变量赋值，两者实际指向同一个 map，因此如果要基于旧配置创建新配置，需要使用 <code>make()</code> 创建新的 map 对象，并复制 keys 和 values</li>
+</ul>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>这部分感觉难度不大，照着 Lab 3 的代码抄抄改改就好。</p>
+<p>值得注意一下的是 re-balance 这个过程，必须保证确定性，使多个 server 对同一配置的 rebalance 结果是一样的。如官方提示所说，Golang 中 map 的遍历顺序是无固定顺序的，在进行「从 <code>Config.Groups</code> 中遍历取得 <code>GroupIds</code>」这样的操作时需要对得到的 slice 排一下序。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">reBalance</span><span class="params">(conf *Config)</span></span> &#123;</span><br><span class="line">	<span class="comment">// Some basic variables</span></span><br><span class="line">	shardNum := <span class="built_in">len</span>(conf.Shards)</span><br><span class="line">	groupNum := <span class="built_in">len</span>(conf.Groups)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> groupNum == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(conf.Shards); i++ &#123;</span><br><span class="line">			conf.Shards[i] = <span class="number">0</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	base := shardNum / groupNum</span><br><span class="line">	remain := shardNum % groupNum</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Create map&#123; groupId -&gt; []shards &#125;</span></span><br><span class="line">	alloc := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">int</span>][]<span class="type">int</span>)</span><br><span class="line">	<span class="keyword">var</span> gids []<span class="type">int</span></span><br><span class="line">	tempGroup := <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> k, _ := <span class="keyword">range</span> conf.Groups &#123;</span><br><span class="line">		alloc[k] = []<span class="type">int</span>&#123;&#125;</span><br><span class="line">		gids = <span class="built_in">append</span>(gids, k)</span><br><span class="line">		tempGroup = MaxInt(tempGroup, k) <span class="comment">// Found a deterministic groupId to temporarily store some shards</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(conf.Shards); i++ &#123;</span><br><span class="line">		<span class="keyword">if</span> _, ok := conf.Groups[conf.Shards[i]]; ok &#123;</span><br><span class="line">			alloc[conf.Shards[i]] = <span class="built_in">append</span>(alloc[conf.Shards[i]], i)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			alloc[tempGroup] = <span class="built_in">append</span>(alloc[tempGroup], i) <span class="comment">// Put the shards with invalid groupId to tempGroup before re-balance</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// To ensure that in different servers, the GroupId that</span></span><br><span class="line">	<span class="comment">// has a same amount of shards has the identical relative position</span></span><br><span class="line">	sort.Ints(gids)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Sort groupIds by amount of shards</span></span><br><span class="line">	sort.SliceStable(gids, <span class="function"><span class="keyword">func</span><span class="params">(i, j <span class="type">int</span>)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">len</span>(alloc[gids[i]]) &lt; <span class="built_in">len</span>(alloc[gids[j]])</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Re-balance the shard allocation</span></span><br><span class="line">	left := <span class="number">0</span></span><br><span class="line">	right := <span class="built_in">len</span>(gids) - <span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> left &lt; right &#123;</span><br><span class="line">		<span class="keyword">for</span> left &lt; right &amp;&amp; ((left &lt; groupNum-remain &amp;&amp; <span class="built_in">len</span>(alloc[gids[left]]) &gt;= base) ||</span><br><span class="line">			(left &gt;= groupNum-remain &amp;&amp; <span class="built_in">len</span>(alloc[gids[left]]) &gt;= base+<span class="number">1</span>)) &#123;</span><br><span class="line">			left++</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> left &lt; right &amp;&amp; ((right &gt;= groupNum-remain &amp;&amp; <span class="built_in">len</span>(alloc[gids[right]]) &lt;= base+<span class="number">1</span>) ||</span><br><span class="line">			(right &lt; groupNum-remain &amp;&amp; <span class="built_in">len</span>(alloc[gids[right]]) &lt;= base)) &#123;</span><br><span class="line">			right--</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> left &lt; right &#123;</span><br><span class="line">			mv := alloc[gids[right]][<span class="built_in">len</span>(alloc[gids[right]])<span class="number">-1</span>]</span><br><span class="line">			alloc[gids[left]] = <span class="built_in">append</span>(alloc[gids[left]], mv)</span><br><span class="line">			alloc[gids[right]] = alloc[gids[right]][:<span class="built_in">len</span>(alloc[gids[right]])<span class="number">-1</span>]</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Apply the result</span></span><br><span class="line">	<span class="keyword">for</span> group, shards := <span class="keyword">range</span> alloc &#123;</span><br><span class="line">		<span class="keyword">for</span> _, s := <span class="keyword">range</span> shards &#123;</span><br><span class="line">			conf.Shards[s] = group</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Re-balance 的代码，实现了尽量减少 shard 迁移这一要求，但写得属实野蛮。</p>
+
+        
+      </div>
+
+         
+    </div>
+    
+     
+  </div>
+  
+    
+<nav id="article-nav">
+  <a class="article-nav-btn left  disabled "
+     >
+    <i class="fa-solid fa-angle-left"></i>
+    <p class="title-text">
+        
+    </p>
+  </a>
+  <a class="article-nav-btn right "
+    
+      href="/2023/02/26/note-6824-lab3/"
+      title="6.824 Lab 3 笔记"
+     >
+
+    <p class="title-text">
+      
+        6.824 Lab 3 笔记
+        
+    </p>
+    <i class="fa-solid fa-angle-right"></i>
+  </a>
+</nav>
+
+
+  
+</article>
+
+ 
+    </div>
+    <div id="footer-wrapper">
+      <footer id="footer">
+  
+  <div id="footer-info" class="inner">
+    
+    &copy; 2023 Saica.go<br>
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & Theme <a target="_blank" rel="noopener" href="https://github.com/saicaca/hexo-theme-vix">Vix</a>
+  </div>
+</footer>
+
+    </div>
+    <div class="back-to-top-wrapper">
+    <button id="back-to-top-btn" class="back-to-top-btn" onclick="topFunction()">
+        <span class="material-symbols-rounded">keyboard_arrow_up</span>
+    </button>
+</div>
+
+<script>
+    function topFunction() {
+        window.scroll({ top: 0, behavior: 'smooth' });
+    }
+    let btn = document.getElementById('back-to-top-btn');
+    function scrollFunction() {
+        if (document.body.scrollTop > 600 || document.documentElement.scrollTop > 600) {
+            btn.style.opacity = 1;
+        } else {
+            btn.style.opacity = 0;
+        }
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    }
+</script>
+
+  </div>
+  <script src="/js/light-dark-switch.js"></script>
+</body>
+</html>
